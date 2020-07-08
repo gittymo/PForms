@@ -1,0 +1,116 @@
+/*	PForms.css
+		Funky HTML forms css stylesheets.
+		(C)2020 Morgan Evans */
+
+.NoBorder {
+	border: none !important;
+}
+
+.ContainerBorder {
+	border: 1px solid black !important;
+	border-radius: 4px !important;
+}
+
+.ContainedBorder {
+	border: 1px solid grey !important;
+	border-radius: 4px !important;
+}
+
+div.PFormContainer {
+	display: grid;
+	padding: 8px;
+	font-family: "Arial", sans-serif;
+	font-size: 14pt;
+	grid-gap: 8px;
+}
+
+div.PFormContainer+div.PFormContainer {
+	margin-top: 8px;
+}
+
+div.PFormField {
+	font-family: inherit;
+	display: flex;
+	flex-direction: column;
+	padding: 8px;
+}
+
+div.PFormField label {
+	font-family: inherit;
+	display: block;
+	font-size: 16pt;
+	font-weight: bold;
+	margin-bottom: 8px;
+}
+
+div.PFormField div,
+div.PFormLineItem div {
+	font-family: inherit;
+	background: white !important;
+	border: inherit;
+	border-radius: 2px !important;
+	padding: 4px 8px;
+	height: 23px;
+}
+
+div.PFormField input,
+div.PFormLineItem input {
+	background: white;
+	border: inherit;
+	border-radius: 2px !important;
+	padding: 4px 8px;
+	height: 23px;
+	font-size: inherit !important;
+	font-family: inherit !important;
+}
+
+/*	Line item container specific style sheets. */
+
+div.PFormLineItemsContainer {
+	grid-template-columns: auto;
+}
+
+div.PFormLineItemsContainerElement {
+	display: grid;
+	grid-template-columns: 48px auto;
+	grid-gap: 8px;
+	margin: none;
+	padding: none;
+	border: none;
+}
+
+div.PFormLineItemsContainerElement input[type='checkbox'] {
+	width: 24px;
+	justify-self: center;
+	align-content: center;
+}
+
+div.PFormLineItemsContainerElement button {
+	background-color: orange;
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 4px 0px;
+	font-size: 10pt;
+}
+
+div.PFormLineItemsContainerLines {
+	overflow: scroll;
+}
+
+div.PFormLineItem {
+	border: none !important;
+	border-radius: 4px;
+	display: grid;
+	grid-gap: 8px;
+	grid-auto-rows: minmax(32px, auto);
+	grid-template-columns: auto;
+}
+
+div.PFormLineItem div.heading {
+	font-weight: bold;
+	text-align: center;
+	align-self: center;
+	width: 100%;
+	box-sizing: content-box;
+	padding: 8px 0px;
+}

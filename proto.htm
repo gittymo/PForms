@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<title>PForms Prototyping</title>
+	<meta charset="UTF-8" />
+	<link href="PForms.css" rel="stylesheet" />
+	<script src="PForms.js"></script>
+	<script src="PScript.js"></script>
+</head>
+
+<body onload="InitPForms()" onresize="UpdatePForms()">
+	<div class="PFormContainer" columns="3" id="test1">
+		<input class="PFormField" fieldname="supplierName" fieldlabel="Supplier Name" />
+		<div class="PFormField" fieldname="supplierCode" fieldlabel="Supplier Code"></div>
+		<input class="PFormField" fieldname="ponumber" fieldlabel="PO Number" />
+		<input class="PFormField" fieldname="invoiceno" fieldlabel="Invoice No" />
+	</div>
+	<div class="PFormContainer" id="test2">
+		<div>Some splurge to show that normal elements can exist in PFormContainers.</div>
+		<div class="PFormContainer" type="lineitems" columns="6" minlines="1" maxlines="5" id="test3">
+			<input class="PFormField" fieldlabel="PO Number" width="10" />
+			<input class="PFormField" fieldlabel="Line" width="4" />
+			<div class="PFormField" fieldlabel="Cost Code" width="14"></div>
+			<input class="PFormField" fieldlabel="Description" width="20" />
+			<input class="PFormField" fieldlabel="Unit Price" width="10" />
+			<input class="PFormField" fieldlabel="Quantity" width="10" />
+		</div>
+	</div>
+</body>
+
+</html>

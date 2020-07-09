@@ -5,6 +5,7 @@
 class PScriptPart {
 	constructor(partString, partType) {
 		this.partString = partString;
+		this.partType = partType;
 	}
 
 	static PlainText = 1;
@@ -46,33 +47,69 @@ class PScriptParser {
 	}
 }
 
-function GetP2PField(fieldName) {
-	var p2pField = null;
-	if (fieldName != null &&
-		(typeof fieldName === "string" || fieldName instanceof String) &&
-		fieldName.length > 0) {
-		var fieldElements = document.getElementsByClassName("P2PField");
-		if (fieldElements.length > 0) {
-			for (const fieldElement of fieldElements) {
-				if (fieldElement.hasAttribute("fieldname") &&
-					fieldElement.getAttribute("fieldname").toUpperCase() === fieldName.toUpperCase()) {
-					p2pField = fieldElement;
+class PScriptField {
+	constructor(fieldPath = null) {
+		this.elements = null;
+		if (fieldPath != null && (fieldPath instanceof String || typeof fieldPath === "string") && fieldPath.trim().length > 0) {
+			fieldPath = fieldPath.trim().replace('$','');
+			if (fieldPath.indexOf('[') > 0) fieldPath = fieldPath.substring(0, fieldPath.indexOf('['));
+			// Break the field path string down into parts, where each part is delimeted using a period (.)
+			const fieldPathParts = fieldPath.split('.');
+			const requiredFieldName = fieldPathParts[fieldPathParts.length - 1].toUpperCase();
+			if (fieldPathParts.length > 1) {
+				var parentContainer = document.getElementById(fieldPathParts[fieldPathParts.length - 2]);
+				if (parentContainer != null && parentContainer instanceof HTMLDivElement && parentContainer.classList.contains("PFormContainer")) {
+					if (!parentContainer.classList.contains("PFormLineItemsContainer")) GetNonLineElements(parentContainer);
+					else this.GetLineItemElements(parentContainer);
+				}
+			}
+		}
+	}
+
+	GetNonLineElements(parentContainer) {
+		const childNodes = parentContainer.childNodes;
+		for (var i = 0; i < childNodes.length; i++) {
+			if (childNodes[i].nodeType == 1) {
+				const fieldElements = childNodes[i].getElementsByClassName("PFormField");
+				if (fieldElements[0].hasAttribute("fieldname") && fieldElements[0].getAttribute("fieldname").toUpperCase() === requiredFieldName) {
+					this.elements = [ fieldElements[0] ];
 					break;
 				}
 			}
 		}
 	}
-	return p2pField;
+
+	GetLineItemElements(parentContainer) {
+		this.elements = [];
+		const lineItemContainers = parentContainer.getElementsByClassName("PFormLineItemsContainerElement");
+		for (var i = 0; i < lineItemContainers.length; i++) {
+			const lineItems = lineItemContainers[i].getElementsByClassName("PFormLineItem");
+			for (var j = 0; j < lineItems.length; j++) {
+				const lineItemFields = lineItems[j].getElementsByClassName("PFormField");
+				for (var k = 0; k < lineItemFields.length; k++) {
+					if (lineItemFields[k].hasAttribute("fieldname") && lineItemFields[k].getAttribute("fieldname").toUpperCase() === requiredFieldName) {
+						this.elements.push(lineItemsFields[k]);
+					}
+				}
+			}
+		}
+	}
+
+	GetValueScript() {
+		var valueScript = null;
+		if (this.elements.length > 0) {
+		for (var i = 0; valueScript == null && i < this.elements.length; i++) {
+			if (this.elements[i].hasAttribute("valuescript")) valueScript = this.elements[i].getAttribute("valuescript");
+		}
+		return valueScript;
+	}
+
+	UpdateValues() {
+		
+	}
 }
 
-function GetValueScript(fieldName) {
-	var valueScript = null;
-	var p2pField = GetP2PField(fieldName);
-	if (p2pField != null && p2pField.hasAttribute("valuescript")) {
-		valueScript = p2pField.getAttribute("valuescript");
-	}
-	return valueScript;
-}
+
 
 function GetFieldValue(fieldName) {
 	var p2pField = GetP2PField(fieldName);

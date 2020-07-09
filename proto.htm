@@ -7,26 +7,32 @@
 	<link href="PForms.css" rel="stylesheet" />
 	<script src="PForms.js"></script>
 	<script src="PScript.js"></script>
+	<script>
+		function Init() {
+			InitPForms();
+			alert(GetPScriptFieldValue("Lines.description"));
+		}
+	</script>
 </head>
 
-<body onload="InitPForms()" onresize="UpdatePForms()">
-	<div class="PFormContainer" columns="3" id="test1">
-		<input class="PFormField" fieldname="supplierName" fieldlabel="Supplier Name" />
+<body onload="Init()" onresize="UpdatePForms()">
+	<div class="PFormContainer" columns="3" id="Header">
+		<input class="PFormField" fieldname="supplierName" fieldlabel="Supplier Name" value="Brian" />
 		<div class="PFormField" fieldname="supplierCode" fieldlabel="Supplier Code"></div>
-		<input class="PFormField" fieldname="ponumber" fieldlabel="PO Number" />
+		<input class="PFormField" fieldname="ponumber" fieldlabel="PO Number" minLength="1" maxLength="8" required="true" tooltip="Enter a valid PO number" />
 		<input class="PFormField" fieldname="invoiceno" fieldlabel="Invoice No" />
 	</div>
-	<div class="PFormContainer" id="test2">
+	<div class="PFormContainer" id="LinesContainer">
 		<div>Some splurge to show that normal elements can exist in PFormContainers.</div>
-		<div class="PFormContainer" type="lineitems" columns="6" minlines="1" maxlines="5" id="test3">
-			<input class="PFormField" fieldlabel="PO Number" width="10" />
-			<input class="PFormField" fieldlabel="Line" width="4" />
-			<div class="PFormField" fieldlabel="Cost Code" width="14"></div>
-			<input class="PFormField" fieldlabel="Description" width="20" />
-			<input class="PFormField" fieldlabel="Unit Price" width="10" />
-			<input class="PFormField" fieldlabel="Quantity" width="10" />
+		<div class="PFormContainer" type="lineitems" columns="6" minlines="4" maxlines="5" id="Lines">
+			<input class="PFormField" fieldlabel="PO Number" fieldname="ponumber" width="8" fieldvalue="$Header.ponumber" />
+			<input class="PFormField" fieldlabel="Line" width="4" fieldname="poline" />
+			<div class="PFormField" fieldlabel="Cost Code" width="14" fieldname="costcode"></div>
+			<input class="PFormField" fieldlabel="Description" width="20" fieldname="description" />
+			<input class="PFormField" fieldlabel="Unit Price" width="10" fieldname="unitprice" />
+			<input class="PFormField" fieldlabel="Quantity" width="10" fieldname="quantity" />
 		</div>
 	</div>
-</body>
+	</body>
 
 </html>

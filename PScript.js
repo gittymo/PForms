@@ -2,10 +2,26 @@
 		A small interpreted language used to manipulate field values.
 		(C)2020 Morgan Evans */
 
+class PScriptPartData {
+	constructor(element) {
+
+	}
+}
+
 class PScriptPart {
 	constructor(partString, partType) {
 		this.partString = partString;
 		this.partType = partType;
+	}
+
+	GetElements() {
+		var elements = [];
+		if (this.partType == PScriptPart.ScriptText) {
+			var nextElementIndex = indexOf('$');
+			while (nextElementIndex >= 0) {
+				
+			}
+		}
 	}
 
 	static PlainText = 1;
@@ -15,7 +31,7 @@ class PScriptPart {
 class PScriptParser {
 	constructor(scriptString) {
 		this.scriptString = (scriptString != null && (typeof scriptString === "string" || scriptString instanceof String) &&
-			scriptString.length > 0) ? "" + scriptString : null;
+			scriptString.trim().length > 0) ? "" + scriptString.trim() : null;
 		this.offset = 0;
 	}
 
@@ -48,79 +64,18 @@ class PScriptParser {
 }
 
 class PScriptField {
-	constructor(fieldPath = null) {
-		this.elements = null;
-		if (fieldPath != null && (fieldPath instanceof String || typeof fieldPath === "string") && fieldPath.trim().length > 0) {
-			fieldPath = fieldPath.trim().replace('$','');
-			if (fieldPath.indexOf('[') > 0) fieldPath = fieldPath.substring(0, fieldPath.indexOf('['));
-			// Break the field path string down into parts, where each part is delimeted using a period (.)
-			const fieldPathParts = fieldPath.split('.');
-			const requiredFieldName = fieldPathParts[fieldPathParts.length - 1].toUpperCase();
-			if (fieldPathParts.length > 1) {
-				var parentContainer = document.getElementById(fieldPathParts[fieldPathParts.length - 2]);
-				if (parentContainer != null && parentContainer instanceof HTMLDivElement && parentContainer.classList.contains("PFormContainer")) {
-					if (!parentContainer.classList.contains("PFormLineItemsContainer")) GetNonLineElements(parentContainer);
-					else this.GetLineItemElements(parentContainer);
-				}
-			}
+	constructor(element) {
+		if (element != undefined && element != null && element instanceof HTMLElement && element.classList.contains("PFormField")) {
+			this.element = element;
+			this.buildDependencies();
 		}
 	}
 
-	GetNonLineElements(parentContainer) {
-		const childNodes = parentContainer.childNodes;
-		for (var i = 0; i < childNodes.length; i++) {
-			if (childNodes[i].nodeType == 1) {
-				const fieldElements = childNodes[i].getElementsByClassName("PFormField");
-				if (fieldElements[0].hasAttribute("fieldname") && fieldElements[0].getAttribute("fieldname").toUpperCase() === requiredFieldName) {
-					this.elements = [ fieldElements[0] ];
-					break;
-				}
-			}
+	BuildDependencies() {
+		if (this.element.hasAttribute("valuescript")) {
+			const valueScript = this.element.getAttribute("valuescript");
+			const valueScriptParser = new PScriptParser(valueScript);
+
 		}
 	}
-
-	GetLineItemElements(parentContainer) {
-		this.elements = [];
-		const lineItemContainers = parentContainer.getElementsByClassName("PFormLineItemsContainerElement");
-		for (var i = 0; i < lineItemContainers.length; i++) {
-			const lineItems = lineItemContainers[i].getElementsByClassName("PFormLineItem");
-			for (var j = 0; j < lineItems.length; j++) {
-				const lineItemFields = lineItems[j].getElementsByClassName("PFormField");
-				for (var k = 0; k < lineItemFields.length; k++) {
-					if (lineItemFields[k].hasAttribute("fieldname") && lineItemFields[k].getAttribute("fieldname").toUpperCase() === requiredFieldName) {
-						this.elements.push(lineItemsFields[k]);
-					}
-				}
-			}
-		}
-	}
-
-	GetValueScript() {
-		var valueScript = null;
-		if (this.elements.length > 0) {
-		for (var i = 0; valueScript == null && i < this.elements.length; i++) {
-			if (this.elements[i].hasAttribute("valuescript")) valueScript = this.elements[i].getAttribute("valuescript");
-		}
-		return valueScript;
-	}
-
-	UpdateValues() {
-		
-	}
-}
-
-
-
-function GetFieldValue(fieldName) {
-	var p2pField = GetP2PField(fieldName);
-	var fieldValue = null;
-	if (p2pField != null) {
-		if (fieldElement.getAttribute("fieldname").toUpperCase() === fieldName.toUpperCase()) {
-			if (fieldElement instanceof HTMLDivElement) fieldValue = "" + fieldElement.innerHTML;
-			else if (fieldElement instanceof HTMLInputElement) {
-				if (fieldElement.type.toUpperCase() === "TEXT") fieldValue = "" + fieldElement.value;
-			}
-		}
-	}
-	return fieldValue;
 }

@@ -26,7 +26,8 @@ class FontDimensions {
 class PFormContainer {
 	constructor(element) {
 		this.element = element;
-		if (element != undefined && element != null && element instanceof HTMLDivElement && !this.HasAttribute("initialised")) {
+		if (element != undefined && element != null && element instanceof HTMLDivElement && 
+			!this.HasAttribute("initialised")) {
 			this.fieldDefinitions = [];
 			this.element.formsController = this;
 			this.maxColumns = this.GetAttributeAsInt("columns") > 0 ? this.GetAttributeAsInt("columns") : 1;
@@ -40,7 +41,8 @@ class PFormContainer {
 
 	HasAttribute(attributeName, value = null) {
 		const attributeValue = this.GetAttribute(attributeName);
-		return (value == null) ? (attributeValue != null) : (attributeValue != null && attributeValue.toUpperCase() == value.toUpperCase());
+		return (value == null) ? (attributeValue != null) : (attributeValue != null && 
+			attributeValue.toUpperCase() == value.toUpperCase());
 	}
 
 	GetAttribute(attributeName) {
@@ -132,12 +134,13 @@ class PFormContainer {
 							else if (childElements[i].hasAttribute("width") && !isNaN(childElements[i].getAttribute("width")))
 								childElements[i].minimumWidth = parseInt(childElements[i].getAttribute("width")) * fieldFontWidth;
 							else if (this.islineItemsContainer) {
-								if (childElements[i].hasAttribute("fieldlabel") && childElements[i].getAttribute("fieldlabel").trim().length > 0) {
-									childElements[i].minimumWidth = Math.floor(childElements[i].getAttribute("fieldlabel").length * fieldFontWidth * 0.75);
+								if (childElements[i].hasAttribute("fieldlabel") && 
+									childElements[i].getAttribute("fieldlabel").trim().length > 0) {
+									childElements[i].minimumWidth = 
+										Math.floor(childElements[i].getAttribute("fieldlabel").length * fieldFontWidth * 0.75);
 								}
 							}
 							else childElements[i].minimumWidth = 0;
-							//if (childElements[i].minimumWidth > 0) childElements[i].style.minWidth = childElements[i].minimumWidth + "px";
 
 							if (this.islineItemsContainer) {
 								// If this is is a line items container, we can create and add the heading elements.
@@ -158,8 +161,9 @@ class PFormContainer {
 								}
 								pformField.appendChild(childElements[i]);
 								pformField.setAttribute("initialised", "true");
-								// Replace the original element with our new composite one.
-								// this.element.removeChild(childElements[i]);
+								// Associate a PFormField object with the element.
+								childElements[i].fieldController = new PFormField(childElements[i]);
+								childElements[i].formsController = this;
 								this.element.appendChild(pformField);
 							}
 						}
@@ -178,8 +182,9 @@ class PFormContainer {
 			}
 		}
 
-		/*	We need to make the fields distribute across the display in a sensible manner.  This is done by determining how many columns at minimum width 
-				can be fit into the container's available space.  We then determine how each column should scale into that space. */
+		/*	We need to make the fields distribute across the display in a sensible manner.  This is done by determining how 
+				many columns at minimum width can be fit into the container's available space.  We then determine how each 
+				column should scale into that space. */
 		// First, determine the scale for field items (both normal and line items)
 		var clientWidth = this.element.parentNode.clientWidth;
 		clientWidth = clientWidth - (8 * (this.fieldDefinitions.length + 1)); // Available container space.
@@ -197,22 +202,26 @@ class PFormContainer {
 			if (fieldWidth > 0) {
 				const minFieldWidth = fieldWidth;
 				const scaledFieldWidth = Math.max(fieldWidth, Math.floor(fieldWidth * scale));
-				gridTemplateColumns += (i < columns - 1) ? "minmax(" + minFieldWidth + "px," + scaledFieldWidth + "px) " : "auto ";
+				gridTemplateColumns += 
+					(i < columns - 1) ? "minmax(" + minFieldWidth + "px," + scaledFieldWidth + "px) " : "auto ";
 			} else gridTemplateColumns += this.islineItemsContainer ? "auto " : "1fr ";
 		}
 
 		// Make the line items container fit it's container.
-		if (this.islineItemsContainer) this.headingsContainer.parentElement.style.gridTemplateColumns = "48px minmax(" + usedWidth + ", auto)";
+		if (this.islineItemsContainer) 
+			this.headingsContainer.parentElement.style.gridTemplateColumns = "48px minmax(" + usedWidth + ", auto)";
 
 		// Set the grid template configuration for the field/line items.
 		if (this.islineItemsContainer) {
 			const lineItems = this.lineItemsContainer.getElementsByClassName("PFormLineItem");
 			for (var i = 0; i < lineItems.length; i++) {
-				if (lineItems[i].parentNode == this.lineItemsContainer) lineItems[i].style.gridTemplateColumns = gridTemplateColumns;
+				if (lineItems[i].parentNode == this.lineItemsContainer)
+					lineItems[i].style.gridTemplateColumns = gridTemplateColumns;
 			}
 		} else this.element.style.gridTemplateColumns = gridTemplateColumns;
 
-		// Finally, in the case of line item containers we need to configure the header columns so that they exactly match the line item columns.
+		/* Finally, in the case of line item containers we need to configure the header columns so that they exactly match 
+			the line item columns. */
 		if (this.islineItemsContainer) {
 			const lineItems = this.lineItemsContainer.getElementsByClassName("PFormLineItem");
 			var headingsGridTemplateColumns = "";
@@ -236,6 +245,9 @@ class PFormContainer {
 			lineItemContainer.classList.add("PFormLineItem");
 			for (var i = 0; i < this.fieldDefinitions.length; i++) {
 				var nodeClone = this.fieldDefinitions[i].cloneNode();
+				nodeClone.fieldController = new PFormField(nodeClone);
+				nodeClone.formsController = this;
+				nodeClone.lineItemContainer = lineItemContainer;
 				nodeClone.classList.add("ContainedBorder");
 				lineItemContainer.appendChild(nodeClone);
 			}
@@ -330,6 +342,172 @@ class PFormContainer {
 	}
 }
 
+// PFormField class definition
+class PFormField {
+	constructor(element) {
+		if (element != undefined && element != null && element instanceof HTMLElement && element.classList.contains("PFormField")) {
+			this.element = element;
+		}
+	}
+
+	GetValue() {
+		if (this.element instanceof HTMLDivElement) return this.element.innerHTML;
+		else if (this.element instanceof HTMLInputElement) return this.element.value;
+		else return null;
+	}
+
+	SetValue(value) {
+		if (!this.HasValueScript()) {
+			if (this.element instanceof HTMLDivElement) this.element.innerHTML = value;
+			else if (this.element instanceof HTMLInputElement) this.element.value = value;
+		}
+	}
+
+	HasValueScript() {
+		return this.element.hasAttribute("valuescript");
+	}
+
+	GetValueScript() {
+		return this.HasValueScript() ? this.GetValueScript() : null;
+	}
+
+	UpdateValue() {
+		if (this.HasValueScript()) {
+
+		}
+	}
+
+	static GetTargetField(element, fieldPath = null) {
+		var targetField = null;
+		if (fieldPath != null && (typeof fieldPath === "string" || fieldPath instanceof String)) {
+			// Remove any unnecessary spaces either side of the field path.
+			fieldPath = fieldPath.toUpperCase().trim();
+			if (fieldPath.length > 1 && fieldPath.indexOf('$') == 0) {
+				// Remove any $ characters
+				fieldPath = fieldPath.replace('$','');
+				// Determine if the fieldPath references an array.
+				const arrayPartStart = fieldPath.indexOf('[');
+				const arrayPartEnd = fieldPath.indexOf(']', arrayPartStart);
+				var dataRange = arrayPartStart > 0 && arrayPartEnd > -1 ? new DataRange(arrayPartStart, arrayPartEnd + 1) : null;
+				if (arrayPartStart > -1) fieldPath = fieldPath.substring(0, arrayPartStart);
+				// Split the field path into parts.
+				var fieldPathParts = fieldPath.split(".");
+				if (fieldPathParts.length == 1) {
+					// Assume the path points to a sibling element in the current container or line.
+					if (element.formsController.islineItemsContainer) {
+						// Deal with line items here.
+						if (dataRange == null) {
+							// No array reference was given in the field path, so assume references relate to the line item the element belongs to.
+							const lineItemChildNodes = element.lineItemContainer.childNodes;
+							for (var i = 0; i < lineItemChildNodes.length; i++) {
+								if (lineItemChildNodes[i].nodeType == 1 && lineItemChildNodes[i].hasAttribute("fieldname")) {
+									if (lineItemChildNodes[i].getAttribute("fieldname").toUpperCase === fieldPathParts[0]) targetField = lineItemChildNodes[i];
+								}
+							}
+						} else {
+							// We've been given an array reference, so return one or more results in an array.
+							const lineItems = element.formsController.element.getElementsByClassName("PFormLineItem");
+							targetField = [];
+							if (dataRange.start < 0) dataRange.start = 0;
+							if (dataRange.end < 0 || dataRange.end >= lineItems.length) dataRange.end = lineItems.length - 1;
+							for (var i = 0; i < lineItems.length; i++) {
+								if (i >= dataRange.start && i <= dataRange.end) {
+									const lineFields = lineItems[i].getElementsByClassName("PFormField");
+									for (var j = 0; j < lineFields.length; j++) {
+										const fieldName = lineFields[j].hasAttribute("fieldname") ? 
+											lineFields[j].getAttribute("fieldname").trim().toUpperCase() : null;
+										if (fieldName === fieldPathParts[0]) targetField.push(lineFields[j]);
+									}
+								}
+							}
+						}
+					} else {
+						// Otherwise, we're looking for non-line item fields.
+						const containerChildNodes = element.formsController.element.getElementsByClassName("PFormField");
+						for (var i = 0; i < containerChildNodes.length; i++) {
+							if (containerChildNodes[i].parentNode == element.formsController.element && 
+									containerChildNodes[i] instanceof HTMLDivElement && containerChildNodes[i].classList.contains("PFormField")) {
+								const fieldElement = containerChildNodes[i].getElementsByClassName("PFormField");
+								if (fieldElement[0].hasAttribute("fieldname") && 
+									fieldElement[0].getAttribute("fieldname").toUpperCase() === fieldPathParts[0]) return fieldElement[0];
+							}
+						}
+					}
+				} else {
+					// We only ever use the last two parts of the path.  The penultimate part should point to a PFormsContainer with an id attribute.
+					const container = document.getElementById(fieldPathParts[fieldPathParts.length - 2]);
+					if (container != undefined && container instanceof HTMLDivElement && container.classList.contains("PFormContainer")) {
+						if (container.islineItemsContainer) {
+							const lineItems = container.getElementsByClassName("PFormLineItem");
+							targetField = [];
+							// Dealing with line items here.
+							if (dataRange == null || (dataRange.start == dataRange.end && dataRange.start == -1)) {
+								// We will return all entries if no array range has been provided.
+								
+								for (var i = 0; i < lineItems.length; i++) {
+									const lineFields = lineItems[i].getElementsByClassName("PFormField");
+									for (var j = 0; j < lineFields.length; j++) {
+										if (lineFields[j].hasAttribute("fieldname") && 
+											lineFields[j].getAttribute("fieldname").trim().toUpperCase() === fieldPathParts[fieldPathParts.length - 1]) {
+											targetField.push(lineFields[j]);
+										}
+									}
+								}
+							} else {
+								// We've been given an array reference, so return one or more results in an array.
+								if (dataRange.start < 0) dataRange.start = 0;
+								if (dataRange.end < 0 || dataRange.end >= lineItems.length) dataRange.end = lineItems.length - 1;
+								for (var i = 0; i < lineItems.length; i++) {
+									if (i >= dataRange.start && i <= dataRange.end) {
+										const lineFields = lineItems[i].getElementsByClassName("PFormField");
+										for (var j = 0; j < lineFields.length; j++) {
+											const fieldName = lineFields[j].hasAttribute("fieldname") ? 
+												lineFields[j].getAttribute("fieldname").trim().toUpperCase() : null;
+											if (fieldName === fieldPathParts[fieldPathParts.length - 1]) targetField.push(lineFields[j]);
+										}
+									}
+								}
+							}
+						} else {
+							// Otherwise, we're looking for non-line item fields.
+							const containerChildNodes = container.getElementsByClassName("PFormField");
+							for (var i = 0; i < containerChildNodes.length; i++) {
+								if (containerChildNodes[i].parentNode == container && containerChildNodes[i] instanceof HTMLDivElement && 
+									containerChildNodes[i].classList.contains("PFormField")) {
+									const fieldElement = containerChildNodes[i].getElementsByClassName("PFormField");
+									if (fieldElement[0].hasAttribute("fieldname") && 
+										fieldElement[0].getAttribute("fieldname").toUpperCase() === fieldPathParts[fieldPathParts.length - 1]) 
+										return fieldElement[0];
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+class DataRange {
+	constructor(arrayRangeString = null) {
+		if (arrayRangeString != null && (arrayRangeString instanceof String || typeof arrayRangeString === "string") {
+			arrayRangeString = arrayRangeString.toString().replace('[','').replace(']','');
+			arrayRangeParts = arrayRangeString.split(',');
+			if (arrayRangeParts.length == 1) {
+				this.start = this.end = !arrayRangeParts[0].trim().isNaN() ? parseInt(arrayRangeParts[0].trim()) : -1;
+			} else if (arrayRangeParts.length > 1) {
+				this.start = !arrayRangeParts[0].trim().isNaN() ? parseInt(arrayRangeParts[0].trim()) : -1;
+				this.end = !arrayRangeParts[1].trim().isNaN() ? parseInt(arrayRangeParts[1].trim()) : -1;
+			} else this.start = this.end = -1;
+			if (this.end < this.start && this.end != -1) {
+				var tempStart = this.start;
+				this.start = this.end;
+				this.end = tempStart;
+			}
+		}
+	}
+}
+
 /*	These methods are called from the web page. */
 function InitPForms() {
 	var childNodes = document.body.childNodes;
@@ -347,7 +525,8 @@ function UpdatePForms() {
 	var childNodes = document.body.childNodes;
 	if (childNodes != null && childNodes.length > 0) {
 		for (var i = 0; i < childNodes.length; i++) {
-			if (childNodes[i] instanceof HTMLDivElement && childNodes[i].classList.contains("PFormContainer") && childNodes[i].formsController != undefined) {
+			if (childNodes[i] instanceof HTMLDivElement && childNodes[i].classList.contains("PFormContainer") && 
+			childNodes[i].formsController != undefined) {
 				childNodes[i].formsController.Refresh();
 			}
 		}

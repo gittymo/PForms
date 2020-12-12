@@ -5,12 +5,34 @@
 	<title>PForms Prototyping</title>
 	<meta charset="UTF-8" />
 	<link href="PForms.css" rel="stylesheet" />
+	<link href="ext/typeahead.css" rel="stylesheet" />
 	<script src="PForms.js"></script>
 	<script src="PScript.js"></script>
+	<script src="ext/typeahead.js"></script>
 	<script>
 		function Init() {
 			InitPForms();
 		}
+
+		function GenerateTest(newTypeAhead) {
+        newTypeAhead.AddOption("Hello Again!");
+        newTypeAhead.AddOption("Hello Morgan!");
+        newTypeAhead.AddOption("Goodbye World!");
+        newTypeAhead.AddOption("This 5ux!!");
+        newTypeAhead.AddOption("This is the news!");
+    }
+
+    function GenerateCodes(newTypeAhead) {
+        newTypeAhead.AddOption("Biscuits", "BSC");
+        newTypeAhead.AddOption("Biscuits (Savory)", "BSS");
+        newTypeAhead.AddOption("Bread", "BRD");
+        newTypeAhead.AddOption("Beans", "BNS");
+        newTypeAhead.AddOption("Soup Leek", "SUPL");
+        newTypeAhead.AddOption("Soup Tomato", "SUPT");
+        newTypeAhead.AddOption("Soup Beef", "SUPB");
+        newTypeAhead.AddOption("Soup Chicken", "SUPC");
+        newTypeAhead.AddOption("Steak", "STK");
+    }
 	</script>
 </head>
 
@@ -27,7 +49,7 @@
 		<div class="PFormContainer" type="lineitems" columns="6" minlines="4" maxlines="5" id="Lines">
 			<input class="PFormField" fieldlabel="PO Number" fieldname="ponumber" width="8" valuescript="$Header.ponumber" />
 			<input class="PFormField" fieldlabel="Line" width="4" fieldname="poline" />
-			<div class="PFormField" fieldlabel="Cost Code" width="14" fieldname="costcode"></div>
+			<input class="PFormField TypeAhead" fieldlabel="Cost Code" width="14" fieldname="costcode" generator="GenerateCodes"></input>
 			<input class="PFormField" fieldlabel="Description" width="20" fieldname="description" />
 			<input class="PFormField" fieldlabel="Unit Price" width="10" fieldname="unitprice" />
 			<input class="PFormField" fieldlabel="Quantity" width="10" fieldname="quantity" />

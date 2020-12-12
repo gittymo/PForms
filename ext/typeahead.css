@@ -1,0 +1,37 @@
+div.TypeAheadContainer {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	padding: 0px !important;
+}
+
+div.TypeAheadContainer input {
+	border: 0px !important;
+}
+
+div.TypeAheadContainer div.TypeAheadOptions {
+	display: none;
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 4px;
+	z-index: 2;
+	position: absolute;
+	margin-top: 2em;
+	background: white;
+	flex-direction: column;
+}
+
+div.TypeAheadContainer div.TypeAheadOptions div.TypeAheadOption {
+	padding: 4px 6px;
+	font-size: 12pt;
+	border: none !important;
+	width: 100%;
+}
+
+div.TypeAheadContainer div.TypeAheadOptions div.TypeAheadOptionSelected {
+	background: rgb(192, 224, 255);
+}
+
+div.TypeAheadContainer div.TypeAheadOptions div.TypeAheadOptionHighlighted {
+	background-color: rgb(160, 192, 255);
+}

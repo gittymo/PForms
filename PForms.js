@@ -526,6 +526,10 @@ function InitPForms() {
 			}
 		}
 	}
+
+	if (PFORMS_TYPEAHEAD) InitLibTypeAhead();
+
+	window.onresize = UpdatePForms;
 }
 
 function UpdatePForms() {
@@ -536,6 +540,14 @@ function UpdatePForms() {
 			childNodes[i].formsController != undefined) {
 				childNodes[i].formsController.Refresh();
 			}
+		}
+	}
+
+	if (PFORMS_TYPEAHEAD) {
+		var typeaheads = document.getElementsByClassName("TypeAheadContainer");
+		for (var i = 0; i < typeaheads.length; i++) {
+			var tao = typeaheads[i].typeAheadFieldObject;
+			tao.optionsBox.UpdateWidth();
 		}
 	}
 }

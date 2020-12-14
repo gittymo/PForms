@@ -11,13 +11,13 @@ function TypeAheadOption(text = "", value = null) {
 	this.element.typeAheadOptionObject = this;
 
 	this.element.addEventListener("click", function (event) {
-		var eventElement = event.srcElement || event.target;
+		var eventElement = event.target;
 		var taob = eventElement.typeAheadOptionObject.typeAheadOptionsBox;
 		taob.SelectOption(eventElement.typeAheadOptionObject);
 	});
 
 	this.element.addEventListener("mouseenter", function (event) {
-		var taoElement = event.srcElement || event.target;
+		var taoElement = event.target;
 		var taob = taoElement.typeAheadOptionObject.typeAheadOptionsBox;
 		taob.SetHighlightedOption(taoElement.typeAheadOptionObject);
 	});
@@ -48,7 +48,12 @@ function TypeAheadOptionsBox(typeAheadFieldObject) {
 
 	this.Show = function () {
 		if (this.HasOptions()) this.SetHighlightedOption(this.optionObjects[0]);
-		this.element.style.display = "flex";
+		this.element.style.display = "block";
+		this.UpdateWidth();
+	}
+
+	this.UpdateWidth = function() {
+		this.element.style.width = (this.typeAheadFieldObject.inputElement.clientWidth - 10) + "px";
 	}
 
 	this.Hide = function () {
@@ -151,12 +156,13 @@ function TypeAheadField(inputElement) {
 	var nextSibling = inputElement.nextSibling;
 	this.container = document.createElement("div");
 	this.container.className = "TypeAheadContainer";
+	this.container.typeAheadFieldObject = this;
 	this.inputElement = inputElement;
 	this.inputElement.typeAheadFieldObject = this;
 	this.optionsBox = new TypeAheadOptionsBox(this);
 
 	this.inputElement.addEventListener("blur", function (evt) {
-		var eventTarget = evt.srcElement || evt.target;
+		var eventTarget = evt.target;
 		var tafo = eventTarget.typeAheadFieldObject;
 		if (!tafo.OptionClicked()) {
 			if (tafo.optionsBox.selectedOption != null && eventTarget.value.length > 2) tafo.optionsBox.SelectOption(tafo.optionsBox.selectedOption);
@@ -165,7 +171,7 @@ function TypeAheadField(inputElement) {
 	});
 
 	this.inputElement.onkeyup = this.inputElement.onkeydown = this.inputElement.onkeypress = function (evt) {
-		var eventTarget = evt.srcElement || evt.target;
+		var eventTarget = evt.target;
 		var tafo = eventTarget.typeAheadFieldObject;
 		if (eventTarget.value.length > 2) {
 			if (tafo.HasOptions()) {
@@ -197,7 +203,7 @@ function TypeAheadField(inputElement) {
 	};
 
 	this.inputElement.addEventListener("input", function (evt) {
-		var eventTarget = evt.srcElement || evt.target;
+		var eventTarget = evt.target;
 		var tafo = eventTarget.typeAheadFieldObject;
 		if (eventTarget.value.length > 2) {
 			if (!tafo.optionsBox.visible) tafo.ShowOptions();
@@ -207,7 +213,6 @@ function TypeAheadField(inputElement) {
 
 	this.container.appendChild(this.inputElement);
 	this.container.appendChild(this.optionsBox.element);
-	// parentElement.insertBefore(this.container,nextSibling);
 	this.dependents = [];
 
 	this.inputElement.setAttribute("cfgdone", "true");
@@ -244,21 +249,9 @@ function TypeAheadField(inputElement) {
 	}
 }
 
-function CreateTypeAheadFields() {
-	var typeAheadFields = [];
-	var allTypeAheadFields = document.getElementsByClassName("TypeAhead");
-	for (var i = 0; i < allTypeAheadFields.length; i++) typeAheadFields.push(allTypeAheadFields[i]);
-	for (var i = 0; i < typeAheadFields.length; i++) {
-		if (!typeAheadFields[i].hasAttribute("cfgdone")) {
-			var newTypeAhead = new TypeAheadField(typeAheadFields[i]);
-			if (newTypeAhead.inputElement.hasAttribute("generator")) {
-				window[newTypeAhead.inputElement.getAttribute("generator")](newTypeAhead);
-			}
-		}
-	}
-
+function InitLibTypeAhead() {
 	document.body.addEventListener("mousemove", function (evt) {
-		var eventTarget = evt.srcElement || evt.target;
+		var eventTarget = evt.target;
 		if (activeElement != eventTarget) activeElement = eventTarget;
 	});
 }

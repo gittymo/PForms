@@ -46,10 +46,11 @@ div.PFormField label {
 div.PFormField div,
 div.PFormLineItem div {
 	font-family: inherit;
-	background: white !important;
+	background: white;
 	border: inherit;
 	border-radius: 2px !important;
 	padding: 4px 8px;
+	height: 23px;
 }
 
 div.PFormField input,

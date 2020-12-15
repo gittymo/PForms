@@ -161,8 +161,6 @@ class PFormContainer {
 								}
 								pformField.appendChild(childElements[i]);
 								pformField.setAttribute("initialised", "true");
-								// Associate a PFormField object with the element.
-								childElements[i].fieldController = new PFormField(childElements[i]);
 								childElements[i].formsController = this;
 								this.element.appendChild(pformField);
 							}
@@ -245,7 +243,6 @@ class PFormContainer {
 			lineItemContainer.classList.add("PFormLineItem");
 			for (var i = 0; i < this.fieldDefinitions.length; i++) {
 				var nodeClone = this.fieldDefinitions[i].cloneNode();
-				nodeClone.fieldController = new PFormField(nodeClone);
 				if (nodeClone.classList.contains("TypeAhead")) {
 					var typeAhead = new TypeAheadField(nodeClone);
 					if (typeAhead.inputElement.hasAttribute("generator")) {

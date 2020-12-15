@@ -7,11 +7,12 @@
 	<link href="PForms.css" rel="stylesheet" />
 	<link href="ext/typeahead.css" rel="stylesheet" />
 	<script src="PForms.js"></script>
-	<script src="PScript.js"></script>
 	<script src="ext/typeahead.js"></script>
+	<script src="ext/PScript.js"></script>
 	<script>
 		function Init() {
 			InitPForms();
+			alert(Interpret(null, "{LineItemsContainer.testint}"));
 		}
 
     function GenerateCodes(newTypeAhead) {
@@ -32,12 +33,12 @@
 	<div class="PFormContainer" columns="3" id="Header">
 		<input class="PFormField" fieldname="supplierName" fieldlabel="Supplier Name" />
 		<div class="PFormField" fieldname="supplierCode" fieldlabel="Supplier Code"></div>
-		<input class="PFormField" fieldname="ponumber" fieldlabel="PO Number" minLength="1" maxLength="8" required="true" 
+		<input class="PFormField" fieldname="ponumber" fieldlabel="PO Number" minLength="1" maxLength="8" required="true" value="30073003" 
 			tooltip="Enter a valid PO number" />
 		<input class="PFormField" fieldname="invoiceno" fieldlabel="Invoice No" />
 	</div>
 	<div class="PFormContainer" id="LineItemsContainer">
-		<div>Some splurge to show that normal elements can exist in PFormContainers.</div>
+		<div id="testint">Some splurge to show that normal elements can exist in PFormContainers.</div>
 		<div class="PFormContainer" type="lineitems" columns="6" minlines="4" maxlines="5" id="LineItems">
 			<input class="PFormField" fieldlabel="PO Number" fieldname="ponumber" width="8" valuescript="$Header.ponumber" />
 			<input class="PFormField" fieldlabel="Line" width="4" fieldname="poline" />

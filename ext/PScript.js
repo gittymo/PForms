@@ -1,7 +1,7 @@
 /*	PScript.js
 		Provides inter-component scripting functionality.
 		(C)2020 Morgan Evans */
-const PFORMS_PSCRIPT="15122020.1005";
+const PFORMS_PSCRIPT = "15122020.1005";
 
 /*	PScript examples:
 		{ponumber} returns the value of an element with the id ponumber that can be found in the same container as the dependent element.
@@ -21,21 +21,20 @@ function GetElementValue(element) {
 			} else value = element.innerHTML;
 		}
 	}
-	if (value != undefined && /\s/.test(value)) value = "'" + value.replace('\'','\\\'') + "'";
+	if (value != undefined && /\s/.test(value)) value = "'" + value.replace('\'', '\\\'') + "'";
 	return value;
 }
 
 function Interpret(element, pscript) {
-	if (element != undefined && element != null && element instanceof HTMLElement &&
-			pscript != undefined && pscript != null && typeof pscript === 'string' && pscript.length > 0) {
+	var evaluateThis = "";
+	if (pscript != undefined && pscript != null && typeof pscript === 'string' && pscript.length > 0) {
 		var i = 0;
 		var container = null;
-		var evaluateThis = "";
 		do {
 			i = pscript.indexOf('{', i);
 			var j = pscript.indexOf('}', i);
 			if (j < i) j = pscript.length;
-			var scriptString = pscript.substring(i + 1, j).replace(/\s+/g,'');
+			var scriptString = pscript.substring(i + 1, j).replace(/\s+/g, '');
 			const periodPos = scriptString.indexOf('.');
 			if (periodPos > 0) {
 				var containerId = scriptString.substring(0, periodPos);
@@ -49,7 +48,7 @@ function Interpret(element, pscript) {
 					if (container instanceof HTMLDivElement) {
 						const lineItems = container.childNodes;
 						var array = '[';
-						for (var k = 0 ; k < lineItems.length; k++) {
+						for (var k = 0; k < lineItems.length; k++) {
 							if (lineItems[k] instanceof HTMLDivElement) {
 								array += '[';
 								const lineItemElements = lineItems[k].childNodes;
@@ -63,9 +62,24 @@ function Interpret(element, pscript) {
 						array += "]";
 					} else evaluateThis += GetElementValue(container);
 				} else {
-
+					container = element.parentElement;
+					const childElements = container.childNodes;
+					for (var k = 0; k < childElements.length; k++) {
+						if (childElements[k].id != null && childElements[k].id.toUpperCase() == scriptString.toUpperCase()) {
+							evaluateThis += GetElementValue(childElements[k]);
+						}
+					}
 				}
+			} else {
+				const childElements = container.childNodes;
+				for (var k = 0; k < childElements.length; k++) {
+					if (childElements[k].id != null && childElements[k].id.toUpperCase() == scriptString.toUpperCase()) {
+						evaluateThis += GetElementValue(childElements[k]);
+					}
+				}
+			}
 			i = j + 1;
 		} while (i < pscript.length);
 	}
+	return evaluateThis;
 }

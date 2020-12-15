@@ -36,9 +36,9 @@
 			tooltip="Enter a valid PO number" />
 		<input class="PFormField" fieldname="invoiceno" fieldlabel="Invoice No" />
 	</div>
-	<div class="PFormContainer" id="LinesContainer">
+	<div class="PFormContainer" id="LineItemsContainer">
 		<div>Some splurge to show that normal elements can exist in PFormContainers.</div>
-		<div class="PFormContainer" type="lineitems" columns="6" minlines="4" maxlines="5" id="Lines">
+		<div class="PFormContainer" type="lineitems" columns="6" minlines="4" maxlines="5" id="LineItems">
 			<input class="PFormField" fieldlabel="PO Number" fieldname="ponumber" width="8" valuescript="$Header.ponumber" />
 			<input class="PFormField" fieldlabel="Line" width="4" fieldname="poline" />
 			<input class="PFormField TypeAhead" fieldlabel="Cost Code" width="14" fieldname="costcode" generator="GenerateCodes"

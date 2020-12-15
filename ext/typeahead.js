@@ -4,7 +4,7 @@ const PFORMS_TYPEAHEAD = "12122020.2158";
 
 function TypeAheadOption(text = "", value = null) {
 	this.text = text;
-	this.value = value;
+	this.value = (value != null) ? value : text;
 	this.element = document.createElement("div");
 	this.element.className = "TypeAheadOption";
 	this.element.innerHTML = this.text;

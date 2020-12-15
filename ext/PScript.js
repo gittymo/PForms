@@ -21,8 +21,27 @@ function GetElementValue(element) {
 			} else value = element.innerHTML;
 		}
 	}
-	if (value != undefined && /\s/.test(value)) value = "'" + value.replace('\'', '\\\'') + "'";
+	if (value != undefined && 
+		(/\s/.test(value) || (element.hasAttribute("fieldtype") && element.getAttribute("fieldtype").toUpperCase() == "STRING"))) {
+		value = "'" + value.replace('\'', '\\\'') + "'";
+	}
 	return value;
+}
+
+function GetLowLevelElementValue(element, scriptString) {
+	var evaluateThis = "";
+	if (element.id != null && element.id.toUpperCase() == scriptString.toUpperCase()) {
+		evaluateThis = GetElementValue(element);
+	} else if (element instanceof HTMLDivElement && element.classList.contains("PFormField")) {
+		const subChildElements = element.childNodes;
+		for (var l = 0; l < subChildElements.length; l++) {
+			if (subChildElements[l].hasAttribute("fieldname") && subChildElements[l].getAttribute("fieldname").toUpperCase() ==
+				scriptString.toUpperCase()) {
+					evaluateThis = GetElementValue(subChildElements[l]);
+			}
+		}
+	}
+	return evaluateThis;
 }
 
 function Interpret(element, pscript) {
@@ -65,17 +84,13 @@ function Interpret(element, pscript) {
 					container = element.parentElement;
 					const childElements = container.childNodes;
 					for (var k = 0; k < childElements.length; k++) {
-						if (childElements[k].id != null && childElements[k].id.toUpperCase() == scriptString.toUpperCase()) {
-							evaluateThis += GetElementValue(childElements[k]);
-						}
+						evaluateThis += GetLowLevelElementValue(childElements[k], scriptString);
 					}
 				}
 			} else {
 				const childElements = container.childNodes;
 				for (var k = 0; k < childElements.length; k++) {
-					if (childElements[k].id != null && childElements[k].id.toUpperCase() == scriptString.toUpperCase()) {
-						evaluateThis += GetElementValue(childElements[k]);
-					}
+					evaluateThis += GetLowLevelElementValue(childElements[k], scriptString);
 				}
 			}
 			i = j + 1;

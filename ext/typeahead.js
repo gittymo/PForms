@@ -170,7 +170,7 @@ function TypeAheadField(inputElement) {
 		}
 	});
 
-	this.inputElement.onkeyup = this.inputElement.onkeydown = this.inputElement.onkeypress = function (evt) {
+	this.inputElement.onkeydown = function (evt) {
 		var eventTarget = evt.target;
 		var tafo = eventTarget.typeAheadFieldObject;
 		if (eventTarget.value.length > 2) {

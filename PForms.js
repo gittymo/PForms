@@ -127,37 +127,46 @@ class PFormContainer {
 						if (childElements[i].classList.contains("PFormField")) {
 							// Register the element as a field.
 							this.fieldDefinitions.push(childElements[i]);
+							// Check to see if the element has a tooltip attribute and if so, make sure it appears.
+							if (childElements[i].hasAttribute("tooltip") && childElements[i].getAttribute("tooltip") != null && 
+								childElements[i].getAttribute("tooltip").trim().length > 0) {
+								childElements[i].setAttribute("title", childElements[i].getAttribute("tooltip"));
+							}
 							// Record the minimum width of the field
 							const fieldFontWidth = new FontDimensions(childElements[i]).width;
-							if (childElements[i].hasAttribute("minwidth") && !isNaN(childElements[i].getAttribute("minwidth")))
+							if (childElements[i].hasAttribute("minwidth") && !isNaN(childElements[i].getAttribute("minwidth"))) {
 								childElements[i].minimumWidth = parseInt(childElements[i].getAttribute("minwidth")) * fieldFontWidth;
-							else if (childElements[i].hasAttribute("width") && !isNaN(childElements[i].getAttribute("width")))
+							} else if (childElements[i].hasAttribute("width") && !isNaN(childElements[i].getAttribute("width"))) {
 								childElements[i].minimumWidth = parseInt(childElements[i].getAttribute("width")) * fieldFontWidth;
-							else if (this.islineItemsContainer) {
-								if (childElements[i].hasAttribute("fieldlabel") && 
-									childElements[i].getAttribute("fieldlabel").trim().length > 0) {
+							} else {
+								childElements[i].minimumWidth = 0;
+							}
+
+							// Create a header div if the form field has a fieldLabel attribute
+							var heading = null;
+							if (childElements[i].hasAttribute("fieldlabel")) {
+								heading = document.createElement("div");
+								heading.classList.add("heading");
+								heading.innerHTML = childElements[i].getAttribute("fieldlabel");
+								const headingFontWidth = new FontDimensions(heading).width;
+								if (childElements[i].getAttribute("fieldlabel").trim().length > 0 ) {
 									childElements[i].minimumWidth = 
-										Math.floor(childElements[i].getAttribute("fieldlabel").length * fieldFontWidth * 0.75);
+									Math.floor(childElements[i].getAttribute("fieldlabel").length * headingFontWidth * 1);
 								}
 							}
-							else childElements[i].minimumWidth = 0;
 
 							if (this.islineItemsContainer) {
-								// If this is is a line items container, we can create and add the heading elements.
-								var heading = document.createElement("div");
-								heading.classList.add("heading");
-								if (childElements[i].hasAttribute("fieldlabel"))
-									heading.innerHTML = childElements[i].getAttribute("fieldlabel");
-								this.headingsContainer.appendChild(heading);
-								this.element.removeChild(childElements[i]);
+								// If this is is a line items container, we add the field labels to the line header element.
+								if (childElements[i].hasAttribute("fieldlabel")) {
+									this.headingsContainer.appendChild(heading);
+									this.element.removeChild(childElements[i]);
+								}
 							} else {
 								// Otherwise, treat it like a regular, non line-item, form field (this one has a nice box and label).
 								var pformField = document.createElement("div");
 								pformField.classList.add("PFormField", "ContainedBorder");
 								if (childElements[i].hasAttribute("fieldlabel")) {
-									var pformFieldLabel = document.createElement("label");
-									pformFieldLabel.innerHTML = childElements[i].getAttribute("fieldlabel");
-									pformField.appendChild(pformFieldLabel);
+									pformField.appendChild(heading);
 								}
 								pformField.appendChild(childElements[i]);
 								pformField.setAttribute("initialised", "true");
@@ -201,7 +210,7 @@ class PFormContainer {
 				const minFieldWidth = fieldWidth;
 				const scaledFieldWidth = Math.max(fieldWidth, Math.floor(fieldWidth * scale));
 				gridTemplateColumns += 
-					(i < columns - 1) ? "minmax(" + minFieldWidth + "px," + scaledFieldWidth + "px) " : "auto ";
+					(i < columns - 1) ? "minmax(" + minFieldWidth + "px, " + (100.0 / columns) + "%) " : "auto ";
 			} else gridTemplateColumns += this.islineItemsContainer ? "auto " : "1fr ";
 		}
 
